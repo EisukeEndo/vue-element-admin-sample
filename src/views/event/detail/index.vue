@@ -72,45 +72,29 @@
 </template>
 
 <script lang="ts">
-import { createComponent, reactive } from '@vue/composition-api'
+import { createComponent, reactive, toRefs } from '@vue/composition-api'
+import { getEventInfo } from '@/api/events'
 import MyContents from '@/components/MyContents/index.vue'
 
 export default createComponent({
   components: {
     MyContents
   },
-  setup() {
+  setup(_, context) {
     const state = reactive({
-      eventInfo: {
-        eveneName: 'イベント名だよ',
-        item1: 'なんか値を表示するよ',
-        item2: 'なんか値を表示するよーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー'
-      },
-      promotionList: [
-        {
-          id: '1',
-          name: 'プロモーション１',
-          item1: 'なんか値を表示するよ１−１',
-          item2: 'なんか値を表示するよ１−２'
-        },
-        {
-          id: '2',
-          name: 'プロモーション２',
-          item1: 'なんか値を表示するよ２−１',
-          item2: 'なんか値を表示するよ２−２'
-        },
-        {
-          id: '3',
-          name: 'プロモーション３',
-          item1: 'なんか値を表示するよ３−１',
-          item2: 'なんか値を表示するよ３−２'
-        }
-      ]
+      eventInfo: {},
+      promotionList: []
     })
 
+    const fetchEventInfo = async() => {
+      const { data } = await getEventInfo(context.root.$route.params.id)
+      state.eventInfo = data.eventInfo
+      state.promotionList = data.promotionList
+    }
+    fetchEventInfo()
+
     return {
-      eventInfo: state.eventInfo,
-      promotionList: state.promotionList
+      ...toRefs(state)
     }
   }
 })
